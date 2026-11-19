@@ -9,11 +9,13 @@ def coupon_discount_amount(coupon_code, subtotal):
 
     code = coupon_code.upper()
 
+    #changed from returning discount amount as 10 to 10%
     if code == "SAVE10":
-        return 10
+        return 0.10*subtotal
 
+    #changed from returning discount amount as 5% to 5 flat
     if code == "FIVEOFF":
-        return subtotal * 0.05
+        return 5
 
     return 0
 
@@ -26,7 +28,8 @@ def bulk_discount_amount(items, products):
         if product is None:
             continue
 
-        if item["quantity"] > BULK_DISCOUNT_THRESHOLD:
+        #changed so that bulk discounted is applied to when quant is 10+ instead of >10
+        if item["quantity"] >= BULK_DISCOUNT_THRESHOLD:
             line_total = product["price"] * item["quantity"]
             discount += line_total * BULK_DISCOUNT_RATE
 
@@ -34,7 +37,10 @@ def bulk_discount_amount(items, products):
 
 
 def loyalty_discount_amount(customer, subtotal_after_coupon):
-    return subtotal_after_coupon * LOYALTY_RATE
+    #loyalty rate applied to all customers, now only applies if they are a loyal customer
+    if (customer['loyalty']==True):
+        return subtotal_after_coupon * LOYALTY_RATE
+    return 0
 
 
 def apply_discounts(order, customer, products, subtotal):
